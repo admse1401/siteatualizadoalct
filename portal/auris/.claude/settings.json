@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const s = require\\('@signpdf/signpdf'\\); console.log\\('keys:', Object.keys\\(s\\)\\); console.log\\('default:', typeof s.default\\); console.log\\('sign:', typeof s.sign\\); console.log\\('default.sign:', typeof \\(s.default||{}\\).sign\\);\")",
+      "Bash(node -e \"const S = require\\('@signpdf/signer'\\); console.log\\(Object.keys\\(S\\)\\); console.log\\(typeof S.Signer\\);\")",
+      "Bash(node -e \"const s = require\\('@signpdf/signpdf'\\); const src = s.default.sign.toString\\(\\); console.log\\(src.substring\\(0, 500\\)\\);\")",
+      "Bash(node -e \"const u = require\\('@signpdf/signpdf/dist/utils'\\); console.log\\(Object.keys\\(u\\)\\); console.log\\(typeof u.Signer\\); if\\(u.Signer\\) console.log\\(u.Signer.toString\\(\\).substring\\(0,200\\)\\);\")",
+      "Bash(node -e \"const u = require\\('@signpdf/utils'\\); console.log\\(Object.keys\\(u\\)\\); console.log\\(u.Signer?.toString\\(\\)?.substring\\(0,300\\)\\);\")",
+      "Bash(node -e \"const u = require\\('@signpdf/utils'\\); console.log\\('Signer:', typeof u.Signer\\); const s = new \\(class extends u.Signer {}\\); console.log\\('instanceof:', s instanceof u.Signer\\);\")",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

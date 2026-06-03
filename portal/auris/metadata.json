@@ -1,0 +1,6 @@
+{
+  "name": "Auris Toolbox Core",
+  "description": "Ecossistema corporativo e portal centralizado do colaborador da Aliança Tur.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

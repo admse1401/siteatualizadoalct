@@ -1,0 +1,2 @@
+Coloque todas as logos dos clientes aqui nesta pasta.
+Formatos recomendados: PNG (com fundo transparente), SVG ou WebP.

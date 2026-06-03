@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)",
+      "Bash(npx vite *)",
+      "PowerShell(Start-Sleep 4; try { $r = Invoke-WebRequest -Uri \"http://localhost:5173\" -TimeoutSec 5 -UseBasicParsing; $r.StatusCode } catch { \"error: $_\" })",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\TI\\\\Documents\\\\auris\" -Filter \"*.zip\" -Recurse)",
+      "Bash(Select-String '\"version\"|\"main\"|\"module\"|\"exports\"')",
+      "Bash(npm install *)",
+      "Bash(node node_modules/vite/bin/vite.js build)",
+      "Bash(node node_modules/vite/bin/vite.js --port 5173)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(netstat -ano)"
+    ]
+  }
+}

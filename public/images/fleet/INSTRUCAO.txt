@@ -1,0 +1,8 @@
+Coloque suas fotos de veículo aqui.
+Nomeie os arquivos como:
+- vehicle-1.jpg
+- vehicle-2.jpg
+- vehicle-3.jpg
+
+O componente de frota usa esses nomes automaticamente.
+Você pode substituir as imagens a qualquer momento, apenas copiando e colando no diretório.

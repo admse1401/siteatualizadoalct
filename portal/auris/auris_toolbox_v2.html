@@ -1,0 +1,503 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .auris-root {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    height: 600px;
+    background: linear-gradient(135deg, #0a1628 0%, #0d2045 50%, #0a1a3a 100%);
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bubble { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; pointer-events: none; }
+  .bubble-1 { width: 320px; height: 320px; background: #1a4fc4; top: -80px; left: -60px; }
+  .bubble-2 { width: 250px; height: 250px; background: #0f3a8a; bottom: -40px; right: 60px; }
+  .bubble-3 { width: 180px; height: 180px; background: #2563eb; top: 50%; left: 60%; transform: translate(-50%,-50%); }
+
+  /* ── TOPBAR sempre visível ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 14px;
+    position: relative;
+    z-index: 50;
+    flex-shrink: 0;
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 16px; height: 16px; }
+  .logo-text { font-size: 14px; font-weight: 600; color: #fff; }
+  .logo-text span { color: #60a5fa; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 6px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.75);
+    font-size: 17px;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.13); }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 6px; height: 6px;
+    background: #3b82f6; border-radius: 50%;
+    border: 1.5px solid #0a1628;
+  }
+  .avatar-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 11px; font-weight: 700; color: #fff;
+  }
+
+  /* ── CONTENT AREA ── */
+  .content-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── DASHBOARD VIEW ── */
+  .dashboard-view {
+    position: absolute;
+    inset: 0;
+    padding: 28px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    will-change: transform, opacity;
+  }
+  .dashboard-view.hidden {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+
+  .greeting { margin-bottom: 24px; flex-shrink: 0; }
+  .greeting-sub {
+    font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35);
+    letter-spacing: 1.3px; text-transform: uppercase; margin-bottom: 5px;
+  }
+  .greeting-name { font-size: 20px; font-weight: 700; color: #fff; }
+  .greeting-name span { color: #60a5fa; }
+
+  .section-label {
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3);
+    letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 14px;
+  }
+
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .app-card {
+    background: rgba(255,255,255,0.07);
+    border: 0.5px solid rgba(255,255,255,0.13);
+    border-radius: 16px;
+    padding: 18px 14px 16px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  }
+  .app-card:hover { background: rgba(255,255,255,0.11); border-color: rgba(96,165,250,0.3); transform: translateY(-2px); }
+  .app-card:active { transform: scale(0.97); }
+
+  .app-icon {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .icon-claims { background: rgba(59,130,246,0.2); color: #93c5fd; border: 0.5px solid rgba(59,130,246,0.25); }
+  .icon-signer { background: rgba(99,102,241,0.2); color: #a5b4fc; border: 0.5px solid rgba(99,102,241,0.25); }
+  .icon-calendar { background: rgba(20,184,166,0.18); color: #5eead4; border: 0.5px solid rgba(20,184,166,0.25); }
+
+  .app-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .app-desc { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+  .app-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .badge-live { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 0.5px solid rgba(16,185,129,0.25); }
+  .badge-new { background: rgba(99,102,241,0.2); color: #a5b4fc; border: 0.5px solid rgba(99,102,241,0.3); }
+
+  /* ── APP VIEW (sobrepõe o content-area, mantém topbar) ── */
+  .app-view {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .app-view.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  /* Greeting centralizado no topo do app-view */
+  .app-greeting-bar {
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .app-greeting-left { display: flex; flex-direction: column; gap: 2px; }
+  .app-greeting-hello { font-size: 13px; font-weight: 700; color: #fff; }
+  .app-greeting-hello span { color: #60a5fa; }
+  .app-reminder {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(59,130,246,0.12);
+    border: 0.5px solid rgba(59,130,246,0.22);
+    border-radius: 8px;
+    padding: 6px 11px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    backdrop-filter: blur(8px);
+    max-width: 260px;
+  }
+  .reminder-dot { width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; flex-shrink: 0; }
+
+  .app-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back-btn {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    padding: 5px 9px;
+    border-radius: 8px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+  .app-title-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.07);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+  }
+  .app-title-chip .chip-icon { font-size: 14px; }
+  .app-title-chip span { font-size: 13px; font-weight: 600; color: #fff; }
+
+  /* Fundo do app: blur sobre as bolhas, sem ver os cards */
+  .app-content {
+    flex: 1;
+    padding: 22px 24px;
+    overflow-y: auto;
+    background: rgba(10,22,40,0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  .placeholder-header { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .placeholder-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 18px; }
+
+  .placeholder-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .p-card {
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px;
+    backdrop-filter: blur(8px);
+  }
+  .p-card-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .p-card-value { font-size: 24px; font-weight: 700; color: #fff; }
+  .p-card-unit { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+  .app-placeholder-body {
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: rgba(255,255,255,0.28);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* Painéis flutuantes */
+  .ai-panel, .profile-panel {
+    display: none;
+    position: absolute;
+    top: 62px; right: 16px;
+    z-index: 300;
+    animation: slideDown 0.2s ease;
+    border-radius: 14px;
+    backdrop-filter: blur(24px);
+    border: 0.5px solid rgba(255,255,255,0.13);
+    background: rgba(13,32,69,0.95);
+  }
+  .ai-panel.visible, .profile-panel.visible { display: block; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ai-panel { width: 270px; padding: 18px; }
+  .ai-panel-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+  .ai-panel-sub { font-size: 11px; color: rgba(255,255,255,0.38); margin-bottom: 14px; }
+  .ai-msg { font-size: 12px; padding: 10px 12px; border-radius: 10px; line-height: 1.5; margin-bottom: 12px; background: rgba(59,130,246,0.15); color: rgba(255,255,255,0.82); border: 0.5px solid rgba(59,130,246,0.2); }
+  .ai-input-row { display: flex; gap: 8px; align-items: center; }
+  .ai-input { flex: 1; background: rgba(255,255,255,0.07); border: 0.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 7px 10px; font-size: 12px; color: #fff; outline: none; }
+  .ai-input::placeholder { color: rgba(255,255,255,0.28); }
+  .ai-send { width: 28px; height: 28px; background: #2563eb; border: none; border-radius: 7px; color: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  .profile-panel { width: 210px; overflow: hidden; }
+  .profile-header { padding: 16px 14px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 10px; }
+  .profile-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg,#1d4ed8,#2563eb); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+  .profile-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .profile-role { font-size: 11px; color: rgba(255,255,255,0.38); }
+  .profile-items { padding: 6px 0; }
+  .profile-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 12px; color: rgba(255,255,255,0.65); cursor: pointer; transition: background 0.12s; }
+  .profile-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .profile-item i { font-size: 14px; }
+  .profile-divider { height: 0.5px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+  .profile-logout { color: rgba(239,68,68,0.75) !important; }
+  .profile-logout:hover { color: #f87171 !important; }
+</style>
+
+<div class="auris-root" id="aurisRoot">
+  <div class="bubble bubble-1"></div>
+  <div class="bubble bubble-2"></div>
+  <div class="bubble bubble-3"></div>
+
+  <!-- TOPBAR sempre presente -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L15 6V12L9 16L3 12V6L9 2Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9" cy="9" r="2" fill="white"/></svg>
+      </div>
+      <span class="logo-text">Auris <span>Toolbox</span></span>
+    </div>
+    <div class="topbar-actions">
+      <div class="icon-btn" onclick="togglePanel('aiPanel')"><i class="ti ti-robot" aria-hidden="true"></i></div>
+      <div class="icon-btn"><i class="ti ti-bell" aria-hidden="true"></i><div class="notif-dot"></div></div>
+      <div class="avatar-btn" onclick="togglePanel('profilePanel')">JS</div>
+    </div>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="content-area">
+
+    <!-- Dashboard -->
+    <div class="dashboard-view" id="dashboardView">
+      <div class="greeting">
+        <div class="greeting-sub">Portal do Colaborador</div>
+        <div class="greeting-name">Olá, <span>João da Silva</span> 👋</div>
+      </div>
+      <div class="section-label">Seus aplicativos</div>
+      <div class="apps-grid">
+        <div class="app-card" onclick="openApp('claims')">
+          <div class="app-icon icon-claims"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+          <div class="app-name">Auris Claims</div>
+          <div class="app-desc">Gestão de sinistros e ocorrências</div>
+          <div class="app-badge badge-live">Ativo</div>
+        </div>
+        <div class="app-card" onclick="openApp('signer')">
+          <div class="app-icon icon-signer"><i class="ti ti-signature" aria-hidden="true"></i></div>
+          <div class="app-name">Auris Signer</div>
+          <div class="app-desc">Assinatura de documentos em lote</div>
+          <div class="app-badge badge-live">Ativo</div>
+        </div>
+        <div class="app-card" onclick="openApp('calendar')">
+          <div class="app-icon icon-calendar"><i class="ti ti-calendar-event" aria-hidden="true"></i></div>
+          <div class="app-name">Auris Calendar</div>
+          <div class="app-desc">Calendário corporativo automatizado</div>
+          <div class="app-badge badge-new">Novo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App View -->
+    <div class="app-view" id="appView">
+      <div class="app-greeting-bar">
+        <div class="app-greeting-left">
+          <div class="app-greeting-hello">Olá, <span>João da Silva</span> 👋</div>
+          <div style="margin-top:6px" class="app-reminder">
+            <div class="reminder-dot"></div>
+            <span id="reminderText">Reunião de operações às 14h — Sala B</span>
+          </div>
+        </div>
+        <div class="app-header-row">
+          <div class="back-btn" onclick="closeApp()">
+            <i class="ti ti-arrow-left" style="font-size:13px" aria-hidden="true"></i>
+            Voltar
+          </div>
+          <div class="app-title-chip">
+            <span class="chip-icon" id="chipIcon"></span>
+            <span id="chipName"></span>
+          </div>
+        </div>
+      </div>
+      <div class="app-content" id="appContent"></div>
+    </div>
+
+  </div>
+
+  <!-- Painéis flutuantes -->
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-panel-title"><i class="ti ti-robot" style="font-size:13px;margin-right:6px" aria-hidden="true"></i>Assistente Auris</div>
+    <div class="ai-panel-sub">IA corporativa — em breve</div>
+    <div class="ai-msg">Olá, João! Como posso ajudar você hoje?</div>
+    <div class="ai-input-row">
+      <input class="ai-input" placeholder="Digite sua pergunta..." />
+      <button class="ai-send"><i class="ti ti-send" style="font-size:12px" aria-hidden="true"></i></button>
+    </div>
+  </div>
+
+  <div class="profile-panel" id="profilePanel">
+    <div class="profile-header">
+      <div class="profile-avatar">JS</div>
+      <div>
+        <div class="profile-name">João da Silva</div>
+        <div class="profile-role">Operações · TI</div>
+      </div>
+    </div>
+    <div class="profile-items">
+      <div class="profile-item"><i class="ti ti-user" aria-hidden="true"></i>Meu perfil</div>
+      <div class="profile-item"><i class="ti ti-photo" aria-hidden="true"></i>Foto de perfil</div>
+      <div class="profile-item"><i class="ti ti-lock" aria-hidden="true"></i>Alterar senha</div>
+      <div class="profile-item"><i class="ti ti-settings" aria-hidden="true"></i>Preferências</div>
+      <div class="profile-divider"></div>
+      <div class="profile-item profile-logout"><i class="ti ti-logout" aria-hidden="true"></i>Sair</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const apps = {
+  claims: {
+    name: 'Auris Claims',
+    iconHtml: '<i class="ti ti-shield-check" style="color:#93c5fd;font-size:14px"></i>',
+    reminder: 'Sinistro #0041 aguarda sua análise',
+    stats: [
+      { label: 'Abertos', value: '14', unit: 'este mês' },
+      { label: 'Em análise', value: '6', unit: 'aguardando' },
+      { label: 'Encerrados', value: '38', unit: 'total' }
+    ]
+  },
+  signer: {
+    name: 'Auris Signer',
+    iconHtml: '<i class="ti ti-signature" style="color:#a5b4fc;font-size:14px"></i>',
+    reminder: '3 documentos aguardam sua assinatura',
+    stats: [
+      { label: 'Assinados', value: '127', unit: 'total' },
+      { label: 'Pendentes', value: '3', unit: 'sua assinatura' },
+      { label: 'Em lote', value: '22', unit: 'hoje' }
+    ]
+  },
+  calendar: {
+    name: 'Auris Calendar',
+    iconHtml: '<i class="ti ti-calendar-event" style="color:#5eead4;font-size:14px"></i>',
+    reminder: 'Reunião de operações às 14h — Sala B',
+    stats: [
+      { label: 'Hoje', value: '4', unit: 'eventos' },
+      { label: 'Esta semana', value: '11', unit: 'eventos' },
+      { label: 'Participantes', value: '38', unit: 'colaboradores' }
+    ]
+  }
+};
+
+function openApp(id) {
+  const app = apps[id];
+  document.getElementById('chipIcon').innerHTML = app.iconHtml;
+  document.getElementById('chipName').textContent = app.name;
+  document.getElementById('reminderText').textContent = app.reminder;
+
+  const cards = app.stats.map(s => `
+    <div class="p-card">
+      <div class="p-card-label">${s.label}</div>
+      <div class="p-card-value">${s.value}</div>
+      <div class="p-card-unit">${s.unit}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('appContent').innerHTML = `
+    <div class="placeholder-header">${app.name}</div>
+    <div class="placeholder-sub">Visão geral do módulo</div>
+    <div class="placeholder-cards">${cards}</div>
+    <div class="app-placeholder-body">
+      O conteúdo completo do módulo será carregado aqui de forma fluida,<br>
+      sem sair da Auris Toolbox e mantendo o header sempre visível.
+    </div>
+  `;
+
+  document.getElementById('dashboardView').classList.add('hidden');
+  document.getElementById('appView').classList.add('visible');
+  closeAllPanels();
+}
+
+function closeApp() {
+  document.getElementById('appView').classList.remove('visible');
+  document.getElementById('dashboardView').classList.remove('hidden');
+}
+
+function togglePanel(id) {
+  const panel = document.getElementById(id);
+  const wasVisible = panel.classList.contains('visible');
+  closeAllPanels();
+  if (!wasVisible) panel.classList.add('visible');
+}
+
+function closeAllPanels() {
+  document.querySelectorAll('.ai-panel, .profile-panel').forEach(p => p.classList.remove('visible'));
+}
+
+document.getElementById('aurisRoot').addEventListener('click', function(e) {
+  if (!e.target.closest('.icon-btn') && !e.target.closest('.avatar-btn') && !e.target.closest('.ai-panel') && !e.target.closest('.profile-panel')) {
+    closeAllPanels();
+  }
+});
+</script>

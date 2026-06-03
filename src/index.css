@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-base: #0A2240;
+  --color-brand-secondary: #123B68;
+  --color-brand-overlay: #081726;
+  --color-brand-light: #F5F7FA;
+  --color-brand-gray: #98A2B3;
+  --color-brand-dark: #050B14;
+  --color-accent-red: #C1121F;
+  --color-accent-red-light: #E0202F;
+  --color-accent-red-dark: #060A10;
+  --color-accent-red-secondary: #0E141D;
+  --color-accent-red-base: #0A0F18;
+  --color-accent-gold: #C6A969;
+
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-caveat: "Caveat", cursive;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: var(--color-brand-base);
+  color: var(--color-brand-light);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat);
+}
+
+/* Base custom classes for SplitType */
+.line { overflow: hidden; }
+.word { will-change: transform; }
+.char { will-change: opacity, transform; }

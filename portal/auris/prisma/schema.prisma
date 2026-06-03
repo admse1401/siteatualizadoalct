@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  matricula     String?   @unique
+  passwordHash  String?
+  role          String    @default("USER")
+  roleId        String?
+  assignedRole  Role?     @relation("AssignedRole", fields: [roleId], references: [id])
+  avatarUrl     String?
+  jobTitle      String?
+  setor         String?
+  department    String?
+  phone         String?
+  birthDate     DateTime?
+  obra          String?
+  isActive      Boolean   @default(false)
+  inviteToken   String?   @unique
+  inviteExpires DateTime?
+  resetToken    String?   @unique
+  resetExpires  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  junctionRoles UserRole[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+}
+
+model Role {
+  id            String           @id @default(cuid())
+  name          String           @unique
+  description   String?
+  createdAt     DateTime         @default(now())
+  assignedUsers User[]           @relation("AssignedRole")
+  junctionUsers UserRole[]
+  permissions   RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String?
+  entityId  String?
+  detail    Json?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

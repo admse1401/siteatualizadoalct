@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Auris Signer",
+  "description": "Uma plataforma moderna e segura para assinatura digital de documentos PDF utilizando certificados A1 (P12/PFX).",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
